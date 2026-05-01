@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Garden HQ — 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F4F1EB;--surface:#FDFCF9;--surface2:#F0EDE5;
+  --border:#DDD8CC;--border-light:#E8E4DB;
+  --text:#1A1814;--text2:#5C5849;--text3:#9C9789;
+  --green:#2C5F1A;--green-light:#EAF2E3;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans','Helvetica Neue',sans-serif;
+  --radius:10px;--radius-sm:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:13px;min-height:100vh;}
+.header{padding:24px 24px 0;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;}
+.header-top{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;}
+h1{font-family:var(--font-display);font-size:26px;font-weight:400;letter-spacing:-0.5px;}
+h1 em{font-style:italic;color:var(--green);}
+.season-tag{font-size:11px;color:var(--text3);border:1px solid var(--border);border-radius:99px;padding:2px 10px;}
+.tabs{display:flex;gap:0;}
+.tab{font-family:var(--font-body);font-size:13px;font-weight:500;padding:10px 20px;border:none;background:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+.panel{display:none;padding:20px 24px;}
+.panel.active{display:block;}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;}
+.metric-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.metric-value{font-size:19px;font-family:var(--font-display);color:var(--text);}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.6;}
+.controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.controls input,.controls select{font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);outline:none;font-family:var(--font-body);}
+.controls input{flex:1;min-width:150px;}
+.controls input:focus,.controls select:focus{border-color:var(--green);}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;background:var(--surface2);}
+td{padding:8px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500;}
+.badge-tuber{background:#FDF0E3;color:#7A4310;}
+.badge-bare{background:#EDF5E3;color:#2E6010;}
+.badge-bulb{background:#E5EFF9;color:#1A4E8C;}
+.badge-potted{background:#F5F0E8;color:#5C4A1E;}
+.badge-tree{background:#E8F4F0;color:#0E4C3A;}
+.src-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;}
+.src-fg{background:#EDF5E3;color:#2E6010;}
+.src-dp{background:#FDF0E3;color:#7A4310;}
+.src-sains{background:#FDE8E8;color:#8C1A1A;}
+.src-bq{background:#E8F0FD;color:#1A3C8C;}
+.src-jp{background:#F5E8F8;color:#5C1A7A;}
+.src-gtb{background:#F0E8FD;color:#4A2A7A;}
+.cpp{font-weight:600;font-variant-numeric:tabular-nums;}
+.cpp-1{color:#2E6010;}.cpp-2{color:#1A4E8C;}.cpp-3{color:#7A4310;}.cpp-4{color:#A02020;}
+.status-select{font-size:11px;padding:2px 6px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font-body);cursor:pointer;}
+.status-ordered{background:#FDF6DC;color:#6B4C00;border-color:#E8D8A0;}
+.status-arrived{background:#E5EFF9;color:#1A4E8C;border-color:#B0C8F0;}
+.status-planted{background:#EDF5E3;color:#2E6010;border-color:#A8D080;}
+.zone-pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500;margin:1px 2px 1px 0;white-space:nowrap;}
+.z-hot{background:#FAECE7;color:#8C3015;}
+.z-firepit{background:#FDF0DC;color:#7A4A00;}
+.z-woodland{background:#EDF5E3;color:#2E6010;}
+.z-lawn{background:#E5EFF9;color:#1A4E8C;}
+.zone-wrap{position:relative;display:inline-block;}
+.zone-btn{font-size:11px;padding:2px 8px;border-radius:99px;border:1px dashed var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:var(--font-body);white-space:nowrap;}
+.zone-btn:hover{border-color:var(--text3);color:var(--text2);}
+.zone-drop{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px 0;min-width:155px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+.zone-drop.open{display:block;}
+.zone-opt{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;}
+.zone-opt:hover{background:var(--bg);}
+.zone-opt input,.zone-opt label{cursor:pointer;}
+.zones-cell{display:flex;align-items:center;flex-wrap:wrap;gap:2px;}
+.empty{text-align:center;padding:32px;color:var(--text3);}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr);}.panel{padding:16px;}.header{padding:16px 16px 0;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <h1>Garden <em>HQ</em></h1>
+    <span class="season-tag">2026 Season</span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('plants')">🌱 Plants</button>
+  </div>
+</div>
+
+<div class="panel active" id="panel-plants">
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Individual plants</div><div class="metric-value" id="m-plants">—</div></div>
+    <div class="metric"><div class="metric-label">Total spend</div><div class="metric-value" id="m-total">—</div><div class="metric-sub" id="m-sub">—</div></div>
+    <div class="metric"><div class="metric-label">Planted</div><div class="metric-value" id="m-planted">—</div></div>
+    <div class="metric"><div class="metric-label">Unassigned zones</div><div class="metric-value" id="m-unassigned">—</div></div>
+    <div class="metric"><div class="metric-label">Cost/plant by type</div><div style="font-size:11px;line-height:1.6;margin-top:6px;" id="m-breakdown">—</div></div>
+  </div>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search plants…" oninput="renderPlants()"/>
+    <select id="type-f" onchange="renderPlants()"><option value="">All types</option><option value="bare root">Bare root</option><option value="bulb">Bulb</option><option value="potted">Potted</option><option value="tree">Tree</option><option value="tuber">Tuber</option></select>
+    <select id="src-f" onchange="renderPlants()"><option value="">All suppliers</option><option value="fg">Farmer Gracy</option><option value="dp">Dartana Plants</option><option value="sains">Sainsbury's</option><option value="bq">B&Q</option><option value="jp">J. Parker</option><option value="gtb">Gee Tee Bulbs</option></select>
+    <select id="zone-f" onchange="renderPlants()"><option value="">All zones</option><option value="hot">Hot border</option><option value="firepit">Firepit bowl</option><option value="woodland">Sofa woodland</option><option value="lawn">Lawn border</option><option value="none">Unassigned</option></select>
+    <select id="status-f" onchange="renderPlants()"><option value="">All statuses</option><option value="ordered">Ordered</option><option value="arrived">Arrived</option><option value="planted">Planted</option></select>
+    <select id="sort-f" onchange="renderPlants()"><option value="name">Sort: name</option><option value="cpp-asc">£/plant ↑</option><option value="cpp-desc">£/plant ↓</option><option value="qty-desc">Count ↓</option><option value="price-desc">Line £ ↓</option></select>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th style="width:22%;">Plant</th><th style="width:9%;">Type</th><th style="width:7%;text-align:center;">Per pack</th><th style="width:5%;text-align:center;">Packs</th><th style="width:6%;text-align:center;">Plants</th><th style="width:9%;text-align:right;">Line £</th><th style="width:8%;text-align:right;">£/plant</th><th style="width:8%;">Supplier</th><th style="width:9%;">Status</th><th style="width:17%;">Zones</th></tr></thead><tbody id="plants-tbody"></tbody></table></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const SUPABASE_URL="https://eafzayaxgkvylfteanyi.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhZnpheWF4Z2t2eWxmdGVhbnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NDk5NDQsImV4cCI6MjA5MzIyNTk0NH0.uDblAkmVW4zwKKi4NmRQy0aEEq4-Yvv83uIw-TbfLqk";
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const ZONES=[{key:"hot",label:"Hot border",cls:"z-hot"},{key:"firepit",label:"Firepit bowl",cls:"z-firepit"},{key:"woodland",label:"Sofa woodland",cls:"z-woodland"},{key:"lawn",label:"Lawn border",cls:"z-lawn"}];
+const SRC={fg:"Farmer Gracy",dp:"Dartana",sains:"Sainsbury's",bq:"B&Q",jp:"J. Parker",gtb:"Gee Tee Bulbs"};
+const SRCCLS={fg:"src-fg",dp:"src-dp",sains:"src-sains",bq:"src-bq",jp:"src-jp",gtb:"src-gtb"};
+let plants=[{name:"Actaea 'Pink Spike'",type:"bare root",perPack:9,packs:1,price:26.73,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Alchemilla mollis",type:"bare root",perPack:12,packs:1,price:8.75,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Begonia 'Santa Cruz'",type:"tuber",perPack:1,packs:1,price:3.71,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Dahlia 'Honka Black'",type:"tuber",perPack:3,packs:2,price:14.74,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Dahlia 'Waltzing Mathilda'",type:"tuber",perPack:3,packs:3,price:23.90,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Eupatorium 'Chocolate'",type:"bare root",perPack:9,packs:1,price:24.05,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Euphorbia 'Miners Merlot'",type:"bare root",perPack:9,packs:1,price:28.92,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Hedychium griffithianum",type:"bulb",perPack:3,packs:1,price:11.25,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Hibiscus 'Carousel Pink Passion'",type:"bare root",perPack:3,packs:1,price:19.27,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Hosta Blue 'Mouse Ears'",type:"bare root",perPack:12,packs:1,price:12.32,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Ligularia 'Pandora'",type:"bare root",perPack:9,packs:1,price:23.82,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Lobelia 'Fan Scarlet'",type:"bare root",perPack:9,packs:1,price:18.96,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Monarda 'Bee-Happy'",type:"bare root",perPack:9,packs:1,price:22.40,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Nerine bowdenii",type:"bulb",perPack:50,packs:1,price:28.00,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Paeonia 'Coral Charm'",type:"bare root",perPack:9,packs:1,price:36.45,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Phygelius 'Candy Drops Tangerine'",type:"potted",perPack:6,packs:1,price:25.59,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Polygonatum multiflorum",type:"bare root",perPack:12,packs:1,price:12.32,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Punica 'Uniqa'",type:"potted",perPack:1,packs:1,price:7.51,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Rodgersia 'Superba'",type:"bare root",perPack:9,packs:1,price:33.54,src:"fg",status:"ordered",zones:new Set(),ordered:"2026-04-12"},{name:"Colocasia 'Maui Gold'",type:"potted",perPack:5,packs:2,price:31.92,src:"dp",status:"ordered",zones:new Set(["hot"]),ordered:"2026-03-27"},{name:"Musa sikkimensis 'Bengal Tiger'",type:"potted",perPack:5,packs:4,price:63.84,src:"dp",status:"ordered",zones:new Set(["hot"]),ordered:"2026-03-27"},{name:"Gladiolus 'Black Sea'",type:"bulb",perPack:30,packs:1,price:7.50,src:"sains",status:"ordered",zones:new Set(["hot"]),ordered:"2026-04-27"},{name:"Heuchera 'Palace Purple'",type:"potted",perPack:1,packs:12,price:8.00,src:"sains",status:"ordered",zones:new Set(),ordered:"2026-04-26"},{name:"Actinidia 'Kiwi Jenny'",type:"potted",perPack:1,packs:5,price:65.00,src:"bq",status:"planted",zones:new Set(["hot"]),ordered:"2026-04-26"},{name:"Chamaerops humilis (Palm)",type:"potted",perPack:1,packs:1,price:35.00,src:"bq",status:"planted",zones:new Set(["hot"]),ordered:"2026-04-12"},{name:"Buddleja weyeriana 'Sungold'",type:"potted",perPack:1,packs:1,price:6.50,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Catalpa bignonioides Aurea",type:"tree",perPack:1,packs:1,price:15.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cercis chinensis 'Avondale'",type:"potted",perPack:1,packs:1,price:12.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cornus 'Midwinter Fire'",type:"potted",perPack:1,packs:10,price:24.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cornus alba Sibirica",type:"potted",perPack:1,packs:10,price:21.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cornus Anny's Winter Orange",type:"potted",perPack:1,packs:10,price:21.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cornus Black Kesselringii",type:"potted",perPack:1,packs:10,price:4.20,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Cornus Yellow Flaviramea",type:"potted",perPack:1,packs:10,price:10.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Honeysuckle Dropmore Scarlet",type:"potted",perPack:1,packs:6,price:19.20,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Philadelphus Virginal",type:"potted",perPack:1,packs:1,price:5.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Phlomis russeliana",type:"bare root",perPack:1,packs:10,price:24.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Physocarpus 'Red Baron'",type:"potted",perPack:1,packs:1,price:5.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Sambucus nigra Black Lace",type:"potted",perPack:1,packs:1,price:8.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Tamarix tetrandra",type:"potted",perPack:1,packs:5,price:7.50,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Hosta Mixed",type:"bare root",perPack:1,packs:25,price:20.00,src:"jp",status:"ordered",zones:new Set(),ordered:"2026-03-07"},{name:"Anemone coronaria 'The Bride'",type:"bulb",perPack:1,packs:100,price:8.40,src:"gtb",status:"ordered",zones:new Set(),ordered:"2026-04-28"},{name:"Canna 'Red Stripe'",type:"bulb",perPack:1,packs:12,price:33.70,src:"gtb",status:"ordered",zones:new Set(),ordered:"2026-04-28"},{name:"Crocosmia Lucifer",type:"bulb",perPack:1,packs:100,price:18.00,src:"gtb",status:"ordered",zones:new Set(),ordered:"2026-04-02"},{name:"Eucomis comosa",type:"bulb",perPack:1,packs:12,price:32.54,src:"gtb",status:"ordered",zones:new Set(),ordered:"2026-04-02"}];
+function showTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-'+n).classList.add('active');document.querySelectorAll('.tab').forEach(t=>{if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes("'"+n+"'"))t.classList.add('active');});}
+function bc(t){return{tuber:"badge-tuber","bare root":"badge-bare",bulb:"badge-bulb",potted:"badge-potted",tree:"badge-tree"}[t]||"";}
+function cc(v){return v<=1?"cpp-1":v<=2.5?"cpp-2":v<=5?"cpp-3":"cpp-4";}
+function srcClass(s){return SRCCLS[s]||"";}
+let openZoneIdx=null;
+function toggleZoneDrop(i,e){e.stopPropagation();if(openZoneIdx!==null&&openZoneIdx!==i){const p=document.getElementById('zd-'+openZoneIdx);if(p)p.classList.remove('open');}const el=document.getElementById('zd-'+i);if(!el)return;const was=el.classList.contains('open');el.classList.toggle('open',!was);openZoneIdx=was?null:i;}
+document.addEventListener('click',e=>{if(openZoneIdx!==null&&!e.target.closest('.zone-wrap')){const el=document.getElementById('zd-'+openZoneIdx);if(el)el.classList.remove('open');openZoneIdx=null;}});
+function toggleZone(i,key,checked){if(checked)plants[i].zones.add(key);else plants[i].zones.delete(key);refreshPills(i);refreshStats();syncPlantToSupabase(plants[i]);}
+function refreshPills(i){const pp=document.getElementById('zp-'+i),btn=document.getElementById('zb-'+i);if(!pp||!btn)return;pp.innerHTML=[...plants[i].zones].map(k=>{const z=ZONES.find(z=>z.key===k);return z?`<span class="zone-pill ${z.cls}">${z.label}</span>`:''}).join('');btn.textContent=plants[i].zones.size===0?'+ assign':'✎';}
+function setStatus(i,val){plants[i].status=val;const s=document.getElementById('st-'+i);if(s)s.className='status-select status-'+val;refreshStats();syncPlantToSupabase(plants[i]);}
+function syncPlantToSupabase(plant){const zones=Array.from(plant.zones).join(',');supabase.from('plants').upsert({name:plant.name,type:plant.type,perPack:plant.perPack,packs:plant.packs,price:plant.price,src:plant.src,status:plant.status,zones:zones,ordered:plant.ordered}).catch(e=>console.error('Sync error:',e));}
+function refreshStats(){const total=plants.reduce((s,p)=>s+p.perPack*p.packs,0);const spend=plants.reduce((s,p)=>s+p.price,0);const planted=plants.filter(p=>p.status==='planted').reduce((s,p)=>s+p.perPack*p.packs,0);const sub=Object.keys(SRC).map(k=>{const v=plants.filter(p=>p.src===k).reduce((s,p)=>s+p.price,0);return v>0?`${SRC[k]} £${v.toFixed(2)}`:null;}).filter(Boolean).join(' · ');const types={};plants.forEach(p=>{if(!types[p.type]){types[p.type]={count:0,spend:0};}types[p.type].count+=p.perPack*p.packs;types[p.type].spend+=p.price;});const breakdown=Object.entries(types).map(([t,d])=>`<span style="display:block;font-size:10px;color:var(--text2);">${t}: £${(d.spend/d.count).toFixed(2)}/plant</span>`).sort().join('');document.getElementById('m-plants').textContent=total;document.getElementById('m-total').textContent='£'+spend.toFixed(2);document.getElementById('m-sub').textContent=sub;document.getElementById('m-planted').textContent=planted+' / '+total;document.getElementById('m-unassigned').textContent=plants.filter(p=>p.zones.size===0).length;document.getElementById('m-breakdown').innerHTML=breakdown;}
+function renderPlants(){const q=document.getElementById('search').value.toLowerCase();const tf=document.getElementById('type-f').value;const sf=document.getElementById('src-f').value;const zf=document.getElementById('zone-f').value;const stf=document.getElementById('status-f').value;const s=document.getElementById('sort-f').value;let data=plants.map((p,i)=>({...p,i,total:p.perPack*p.packs,cpp:p.price/(p.perPack*p.packs)})).filter(p=>(!q||p.name.toLowerCase().includes(q))&&(!tf||p.type===tf)&&(!sf||p.src===sf)&&(!stf||p.status===stf)&&(!zf||(zf==='none'?p.zones.size===0:p.zones.has(zf))));if(s==='cpp-asc')data.sort((a,b)=>a.cpp-b.cpp);else if(s==='cpp-desc')data.sort((a,b)=>b.cpp-a.cpp);else if(s==='qty-desc')data.sort((a,b)=>b.total-a.total);else if(s==='price-desc')data.sort((a,b)=>b.price-a.price);else data.sort((a,b)=>a.name.localeCompare(b.name));const tbody=document.getElementById('plants-tbody');if(!data.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No plants match.</td></tr>';refreshStats();return;}tbody.innerHTML=data.map(p=>{const pills=[...p.zones].map(k=>{const z=ZONES.find(z=>z.key===k);return z?`<span class="zone-pill ${z.cls}">${z.label}</span>`:''}).join('');const checks=ZONES.map(z=>`<div class="zone-opt"><input type="checkbox" id="zc-${p.i}-${z.key}" ${p.zones.has(z.key)?'checked':''} onchange="toggleZone(${p.i},'${z.key}',this.checked)"><label for="zc-${p.i}-${z.key}"><span class="zone-pill ${z.cls}">${z.label}</span></label></div>`).join('');return`<tr><td style="font-weight:500;">${p.name}</td><td><span class="badge ${bc(p.type)}">${p.type}</span></td><td style="text-align:center;color:var(--text3);">${p.perPack}</td><td style="text-align:center;color:var(--text3);">${p.packs}</td><td style="text-align:center;">${p.total}</td><td style="text-align:right;">£${p.price.toFixed(2)}</td><td style="text-align:right;" class="cpp ${cc(p.cpp)}">£${p.cpp.toFixed(2)}</td><td><span class="src-badge ${srcClass(p.src)}">${SRC[p.src]}</span></td><td><select class="status-select status-${p.status}" id="st-${p.i}" onchange="setStatus(${p.i},this.value)"><option value="ordered" ${p.status==='ordered'?'selected':''}>Ordered</option><option value="arrived" ${p.status==='arrived'?'selected':''}>Arrived</option><option value="planted" ${p.status==='planted'?'selected':''}>Planted</option></select></td><td><div class="zones-cell"><span id="zp-${p.i}">${pills}</span><div class="zone-wrap"><button class="zone-btn" id="zb-${p.i}" onclick="toggleZoneDrop(${p.i},event)">${p.zones.size===0?'+ assign':'✎'}</button><div class="zone-drop" id="zd-${p.i}">${checks}</div></div></div></td></tr>`;}).join('');refreshStats();}
+renderPlants();
+</script>
+</body>
+</html>
